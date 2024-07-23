@@ -1,0 +1,9 @@
+[package]
+name = "rust_tracer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+k9 = "0.12.0"
