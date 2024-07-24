@@ -3,8 +3,7 @@ use std::{
     io::{BufWriter, Write},
 };
 
-use rust_tracer::sample_image;
-use rust_tracer::PPM;
+use rust_tracer::image::{sample_image, PPM};
 
 fn main() -> std::io::Result<()> {
     let mut buffer = BufWriter::new(File::create("sample.ppm")?);
