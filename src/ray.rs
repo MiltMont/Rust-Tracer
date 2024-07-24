@@ -26,7 +26,22 @@ impl Ray {
     }
 }
 
+// Temporal
+pub fn hit_sphere(center: &Point, radius: f64, ray: &Ray) -> bool {
+    let oc = center - ray.origin();
+    let a = ray.direction().norm_square();
+    let b = -2.0 * ray.direction().dot(&oc);
+    let c = &oc.norm_square() - radius.powi(2);
+    let discriminant = b.powi(2) - 4.0 * a * c;
+
+    discriminant >= 0.
+}
+
 pub fn ray_color(r: &Ray) -> Color {
+    if (hit_sphere(&Point::new(0.0, 0.0, -1.0), 0.5, r)) {
+        return Color::new(1.0, 0.0, 0.0);
+    }
+
     let unit_direction = r.direction().normalize();
     let a = 0.5 * (unit_direction.y() + 1.0);
 
