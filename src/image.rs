@@ -1,10 +1,11 @@
+use crate::color::{write_color, Color};
 use std::fmt::{Debug, Display};
 
 #[derive(Default)]
 pub struct Pixel {
-    r: u8,
-    g: u8,
-    b: u8,
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
 }
 
 // An image is a matrix containing pixels.
@@ -63,17 +64,13 @@ pub fn sample_image() -> Image {
     let image_height = 256;
 
     Image::new_with_init(image_height, image_width, |row, col| {
-        let r = col as f64 / ((image_width - 1) as f64);
-        let g = row as f64 / ((image_height - 1) as f64);
-        let b = 0.;
-
-        let factor = 255.999;
-
-        let r = (factor * r) as u8;
-        let g = (factor * g) as u8;
-        let b = (factor * b) as u8;
-
-        Pixel { r, g, b }
+        let pixel_color = Color {
+            x: col as f64 / ((image_width - 1) as f64),
+            y: row as f64 / ((image_height - 1) as f64),
+            z: 0.,
+        };
+        let pixel = write_color(&pixel_color);
+        pixel
     })
 }
 
