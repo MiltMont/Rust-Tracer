@@ -27,27 +27,43 @@ impl Ray {
 }
 
 // Temporal
-pub fn hit_sphere(center: &Point, radius: f64, ray: &Ray) -> bool {
+pub fn hit_sphere(center: &Point, radius: f64, ray: &Ray) -> f64 {
     let oc = center - ray.origin();
     let a = ray.direction().norm_square();
-    let b = -2.0 * ray.direction().dot(&oc);
+    let h = ray.direction().dot(&oc);
     let c = &oc.norm_square() - radius.powi(2);
-    let discriminant = b.powi(2) - 4.0 * a * c;
+    let discriminant = h.powi(2) - a * c;
 
-    discriminant >= 0.
+    if discriminant < 0.0 {
+        return -1.0;
+    } else {
+        return (h - discriminant.sqrt()) / a;
+    }
 }
 
-pub fn ray_color(r: &Ray) -> Color {
-    if (hit_sphere(&Point::new(0.0, 0.0, -1.0), 0.5, r)) {
-        return Color::new(1.0, 0.0, 0.0);
+pub fn ray_color(ray: &Ray) -> Color {
+    let t = hit_sphere(&Point::new(0.0, 0.0, -1.0), 0.5, ray);
+
+    if t > 0.0 {
+        let normal = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalize();
+        return 0.5 * Color::new(normal.x() + 1., normal.y() + 1., normal.z() + 1.);
     }
 
-    let unit_direction = r.direction().normalize();
+    let unit_direction = ray.direction().normalize();
     let a = 0.5 * (unit_direction.y() + 1.0);
 
     // Going from White to Blue
-    let color = (1.0 - a) * Color::new(1.0, 1.0, 1.0) + a * Color::new(0.5, 0.7, 1.0);
-    color
+    return (1.0 - a) * Color::new(1.0, 1.0, 1.0) + a * Color::new(0.5, 0.7, 1.0);
+}
+
+pub struct HitRecord {
+    pub p: Point,
+    pub normal: Vec3,
+    pub t: f64,
+}
+
+pub trait Hittable {
+    fn hit(&self, ray: &Ray, ray_tmin: f64, ray_tmax: f64, record: &mut HitRecord) -> bool;
 }
 
 #[cfg(test)]
